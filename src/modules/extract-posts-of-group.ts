@@ -1,7 +1,7 @@
 import * as cheerio from "cheerio";
 import puppeteer from "puppeteer";
 import { Target } from "../types/target.js";
-import { Group } from "../types/group.js";
+import { GroupPost } from "../types/group.js";
 import { Post } from "../types/post.js";
 import { timeFormatter } from "./time-formatter.js";
 
@@ -12,9 +12,9 @@ import { timeFormatter } from "./time-formatter.js";
 export async function extractPostsOfGroup(
 	targetList: Target[],
 	countOfPosts: number,
-): Promise<Group[]> {
+): Promise<GroupPost[]> {
 	console.log("Запуск процесса... ⚒️ \n");
-	const groupsPosts: Group[] = [];
+	const groupsPosts: GroupPost[] = [];
 
 	/* Запускаем браузер и открываем новую страницу */
 	const browser = await puppeteer.launch({ headless: "new" });

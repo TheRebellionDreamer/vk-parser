@@ -1,6 +1,6 @@
 import { Post } from "./post.js";
 
-export type Group = {
+export type GroupPost = {
 	groupName: string;
 	posts: Post[];
 };
