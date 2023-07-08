@@ -7,7 +7,7 @@ export const target: Target[] = [
 	},
 	{
 		name: "Шустрый Шмэль",
-		url: "",
+		url: "https://vk.com/micropubru",
 	},
 	{
 		name: "Селёдка и кофе",
