@@ -10,5 +10,5 @@ writeFile("../db.json", jsonView, (error) => {
 	if (error) {
 		throw new Error(error.message);
 	}
-	console.log("Файл с результатами парсинга успешно создан");
+	console.log("\nФайл с результатами успешно создан");
 });

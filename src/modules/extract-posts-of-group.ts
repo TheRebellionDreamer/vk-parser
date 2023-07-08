@@ -3,6 +3,7 @@ import puppeteer from "puppeteer";
 import { Target } from "../types/target.js";
 import { Group } from "../types/group.js";
 import { Post } from "../types/post.js";
+import { timeFormatter } from "./time-formatter.js";
 
 /**
  * @param targetList Массив групп ВК
@@ -12,6 +13,7 @@ export async function extractPostsOfGroup(
 	targetList: Target[],
 	countOfPosts: number,
 ): Promise<Group[]> {
+	console.log("Запуск процесса... ⚒️ \n");
 	const groupsPosts: Group[] = [];
 
 	/* Запускаем браузер и открываем новую страницу */
@@ -19,31 +21,48 @@ export async function extractPostsOfGroup(
 	const page = await browser.newPage();
 
 	for await (const target of targetList) {
-		await page.goto(target.url);
+		try {
+			await page.goto(target.url);
 
-		const content = await page.content();
+			const content = await page.content();
 
-		const $ = cheerio.load(content);
+			const $ = cheerio.load(content);
 
-		/* Находим посты, берем только n-число постов и текст внутри блока  */
-		const textList = getArrayBySelector($, ".wall_post_text", countOfPosts);
+			/* Находим посты, берем только n-число постов и текст внутри блока  */
+			const textList = getArrayBySelector(
+				$,
+				".wall_post_text",
+				countOfPosts,
+			);
 
-		/* Так же и с датами */
-		const dateList = getArrayBySelector(
-			$,
-			".PostHeaderSubtitle__item",
-			countOfPosts,
-		);
+			/* Так же и с датами */
+			const dateList = getArrayBySelector(
+				$,
+				".PostHeaderSubtitle__item",
+				countOfPosts,
+			);
 
-		/* Объединяем и добавляем в массив результата */
-		const result = textList.map(
-			(value, index): Post => ({
-				text: value,
-				date: dateList[index],
-			}),
-		);
+			/* Объединяем и добавляем в массив результата */
+			const result = textList.map(
+				(value, index): Post => ({
+					text: value,
+					date: dateList[index],
+				}),
+			);
 
-		groupsPosts.push({ groupName: target.name, posts: result });
+			console.log(
+				`✅ Данные из ${
+					target.name
+				} успешно получены, время ${timeFormatter(new Date())}`,
+			);
+			groupsPosts.push({ groupName: target.name, posts: result });
+		} catch {
+			console.log(
+				`❌ Не удалось получить данные по группе ${
+					target.name
+				}, время ${timeFormatter(new Date())} url: ${target.url}`,
+			);
+		}
 	}
 
 	/* Закрываем браузер */
