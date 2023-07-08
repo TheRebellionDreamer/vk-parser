@@ -28,6 +28,12 @@ export async function extractPostsOfGroup(
 
 			const $ = cheerio.load(content);
 
+			const groupName = $(".page_name").text();
+
+			if (!groupName) {
+				throw new Error("Имя группы не найдено");
+			}
+
 			/* Находим посты, берем только n-число постов и текст внутри блока  */
 			const textList = getArrayBySelector(
 				$,
@@ -51,17 +57,19 @@ export async function extractPostsOfGroup(
 			);
 
 			console.log(
-				`✅ Данные из ${
-					target.name
-				} успешно получены, время ${timeFormatter(new Date())}`,
+				`✅ Данные из ${groupName} успешно получены, время ${timeFormatter(
+					new Date(),
+				)}`,
 			);
-			groupsPosts.push({ groupName: target.name, posts: result });
-		} catch {
-			console.log(
-				`❌ Не удалось получить данные по группе ${
-					target.name
-				}, время ${timeFormatter(new Date())} url: ${target.url}`,
-			);
+			groupsPosts.push({ groupName, posts: result });
+		} catch (error) {
+			if (error instanceof Error) {
+				console.log(
+					`❌ Не удалось получить данные по адресу ${
+						target.url
+					}. Ошибка: ${error.message}. Время ${timeFormatter(new Date())}`,
+				);
+			}
 		}
 	}
 
