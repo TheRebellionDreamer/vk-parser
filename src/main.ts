@@ -1,6 +1,7 @@
 import { writeFile } from "fs";
-import { target } from "./const/target.js";
+
 import { extractPostsOfGroup } from "./modules/extract-posts-of-group.js";
+import target from "./target.json";
 
 const groupsPosts = await extractPostsOfGroup(target, 5);
 

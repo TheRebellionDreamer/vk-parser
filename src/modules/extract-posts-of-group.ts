@@ -1,8 +1,10 @@
 import * as cheerio from "cheerio";
 import puppeteer from "puppeteer";
+
 import { Target } from "../types/target.js";
 import { GroupPost } from "../types/group.js";
 import { Post } from "../types/post.js";
+
 import { timeFormatter } from "./time-formatter.js";
 
 /**
@@ -13,6 +15,7 @@ export async function extractPostsOfGroup(
 	targetList: Target[],
 	countOfPosts: number,
 ): Promise<GroupPost[]> {
+	console.clear();
 	console.log("Запуск процесса... ⚒️ \n");
 	const groupsPosts: GroupPost[] = [];
 
@@ -22,6 +25,9 @@ export async function extractPostsOfGroup(
 
 	for await (const target of targetList) {
 		try {
+			if (!target.url) {
+				throw new Error("Не указан URL адрес");
+			}
 			await page.goto(target.url);
 
 			const content = await page.content();
@@ -56,18 +62,19 @@ export async function extractPostsOfGroup(
 				}),
 			);
 
+			groupsPosts.push({ groupName, posts: result });
+
 			console.log(
-				`✅ Данные из ${groupName} успешно получены, время ${timeFormatter(
+				`✅ Данные из ${groupName} успешно получены. ${timeFormatter(
 					new Date(),
 				)}`,
 			);
-			groupsPosts.push({ groupName, posts: result });
 		} catch (error) {
 			if (error instanceof Error) {
 				console.log(
-					`❌ Не удалось получить данные по адресу ${
-						target.url
-					}. Ошибка: ${error.message}. Время ${timeFormatter(new Date())}`,
+					`❌ Не удалось получить данные по адресу. Ошибка: ${
+						error.message
+					}. ${timeFormatter(new Date())}`,
 				);
 			}
 		}
